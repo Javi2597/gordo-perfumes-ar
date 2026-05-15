@@ -5,12 +5,19 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Layers } from 'lucide-react'
 import { products } from '@/constants/products'
 import FilterBar, { type FilterCategory } from './FilterBar'
+import AromaFilter from './AromaFilter'
 import SearchBar from './SearchBar'
 import ProductCard from './ProductCard'
 
 export default function CatalogSection() {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('Todos')
   const [searchQuery, setSearchQuery] = useState('')
+  const [aromaFilter, setAromaFilter] = useState<string | null>(null)
+
+  const allAromas = useMemo(
+    () => [...new Set(products.flatMap((p) => p.notas_olfativas))].sort(),
+    []
+  )
 
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -18,9 +25,10 @@ export default function CatalogSection() {
       const matchesCategory = activeFilter === 'Todos' || p.categoria === activeFilter
       const matchesSearch =
         !q || p.nombre.toLowerCase().includes(q) || p.marca.toLowerCase().includes(q)
-      return matchesCategory && matchesSearch
+      const matchesAroma = !aromaFilter || p.notas_olfativas.includes(aromaFilter)
+      return matchesCategory && matchesSearch && matchesAroma
     })
-  }, [activeFilter, searchQuery])
+  }, [activeFilter, searchQuery, aromaFilter])
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24">
@@ -39,9 +47,12 @@ export default function CatalogSection() {
       </motion.div>
 
       {/* Controls: Filter + Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 pb-6 border-b border-ink/[0.07]">
-        <FilterBar active={activeFilter} onChange={setActiveFilter} />
-        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+      <div className="flex flex-col gap-4 mb-10 pb-6 border-b border-ink/[0.07]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <FilterBar active={activeFilter} onChange={setActiveFilter} />
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+        </div>
+        <AromaFilter aromas={allAromas} active={aromaFilter} onChange={setAromaFilter} />
       </div>
 
       {/* Product grid or empty state */}

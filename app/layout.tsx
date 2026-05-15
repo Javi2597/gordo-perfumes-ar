@@ -15,9 +15,21 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Perfumes AR | Catálogo Premium',
+  title: "Terpeno's Fragances",
   description:
     'Catálogo exclusivo de fragancias premium. Consultá disponibilidad y precios referenciales directamente por WhatsApp.',
+  icons: {
+    icon: [
+      { url: '/images/iconos/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/images/iconos/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/images/iconos/favicon.ico', sizes: 'any' },
+    ],
+    apple: [{ url: '/images/iconos/apple-touch-icon.png' }],
+    other: [
+      { rel: 'icon', url: '/images/iconos/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+      { rel: 'icon', url: '/images/iconos/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+  },
 }
 
 export default function RootLayout({

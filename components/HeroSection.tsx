@@ -18,10 +18,24 @@ export default function HeroSection() {
   return (
     <section className="relative w-full min-h-screen bg-ink text-white overflow-hidden flex flex-col">
 
+      {/* ── Video background ── */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        src="/video/background-terpenos.webm"
+      />
+
+      {/* Dark overlay so text stays readable */}
+      <div aria-hidden className="absolute inset-0 bg-ink/65 pointer-events-none" />
+
       {/* Grain texture */}
       <div
         aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-[0.04]"
+        className="absolute inset-0 pointer-events-none opacity-[0.035]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
           backgroundSize: '180px',
@@ -32,7 +46,7 @@ export default function HeroSection() {
       <div
         aria-hidden
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[700px] h-[700px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at center, rgba(197,160,89,0.11) 0%, transparent 68%)' }}
+        style={{ background: 'radial-gradient(ellipse at center, rgba(197,160,89,0.13) 0%, transparent 68%)' }}
       />
 
       {/* Vertical accent lines */}
@@ -40,14 +54,14 @@ export default function HeroSection() {
       <span aria-hidden className="absolute bottom-[56px] left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-t from-transparent to-gold/20 pointer-events-none" />
 
       {/* Corner marks */}
-      <span aria-hidden className="absolute top-7 left-7 w-10 h-px bg-gold/35" />
-      <span aria-hidden className="absolute top-7 left-7 w-px h-10 bg-gold/35" />
-      <span aria-hidden className="absolute top-7 right-7 w-10 h-px bg-gold/35" />
-      <span aria-hidden className="absolute top-7 right-7 w-px h-10 bg-gold/35" />
-      <span aria-hidden className="absolute bottom-[57px] left-7 w-10 h-px bg-gold/35" />
-      <span aria-hidden className="absolute bottom-[57px] left-7 w-px h-10 bg-gold/35" />
-      <span aria-hidden className="absolute bottom-[57px] right-7 w-10 h-px bg-gold/35" />
-      <span aria-hidden className="absolute bottom-[57px] right-7 w-px h-10 bg-gold/35" />
+      <span aria-hidden className="absolute top-7 left-7 w-10 h-px bg-gold/40" />
+      <span aria-hidden className="absolute top-7 left-7 w-px h-10 bg-gold/40" />
+      <span aria-hidden className="absolute top-7 right-7 w-10 h-px bg-gold/40" />
+      <span aria-hidden className="absolute top-7 right-7 w-px h-10 bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[57px] left-7 w-10 h-px bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[57px] left-7 w-px h-10 bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[57px] right-7 w-10 h-px bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[57px] right-7 w-px h-10 bg-gold/40" />
 
       {/* ── Main content ── */}
       <div className="relative flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center max-w-5xl mx-auto w-full">
@@ -84,7 +98,7 @@ export default function HeroSection() {
         {/* Subtitle */}
         <motion.p
           {...fadeUp(0.8)}
-          className="text-white/45 text-sm md:text-base max-w-[22rem] mx-auto leading-loose font-sans tracking-wide"
+          className="text-white/50 text-sm md:text-base max-w-[22rem] mx-auto leading-loose font-sans tracking-wide"
         >
           Fragancias de autor seleccionadas con criterio.
           <br />
@@ -109,7 +123,7 @@ export default function HeroSection() {
                 <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-white/30 mt-2 font-sans">{label}</p>
               </div>
               {i < arr.length - 1 && (
-                <div className="w-px h-9 bg-gold/15" />
+                <div className="w-px h-9 bg-gold/20" />
               )}
             </div>
           ))}
@@ -122,12 +136,12 @@ export default function HeroSection() {
           transition={{ duration: 1, delay: 1.5 }}
           className="flex flex-col items-center gap-2 mt-16"
         >
-          <span className="text-[9px] uppercase tracking-[0.35em] text-white/20 font-sans">Ver catálogo</span>
+          <span className="text-[9px] uppercase tracking-[0.35em] text-white/25 font-sans">Ver catálogo</span>
           <motion.div
             animate={{ y: [0, 5, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <ChevronDown className="w-4 h-4 text-gold/35" />
+            <ChevronDown className="w-4 h-4 text-gold/40" />
           </motion.div>
         </motion.div>
       </div>

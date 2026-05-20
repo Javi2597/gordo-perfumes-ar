@@ -73,7 +73,7 @@ export default function HeroSection() {
           transition={{ duration: 1.3, ease: 'easeOut' }}
           className="text-gold text-[10px] md:text-xs uppercase tracking-[0.4em] mb-10 font-sans"
         >
-          Perfumes Árabes de Diseñador
+          Perfumes Árabes · Nicho · Diseñador
         </motion.p>
 
         {/* Headline */}

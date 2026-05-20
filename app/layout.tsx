@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://www.terpenosfragances.com.ar',
     siteName: "Terpeno's Fragances",
-    title: "Terpeno's Fragances | Perfumes Árabes de Diseñador",
+    title: "Terpeno's Fragances | Perfumes Árabes, de Nicho y de Diseñador",
     description:
       'Catálogo exclusivo de fragancias premium. Consultá disponibilidad y precios referenciales directamente por WhatsApp.',
     locale: 'es_AR',
@@ -32,13 +32,13 @@ export const metadata: Metadata = {
         url: '/images/products/terpenos-fragances.jpeg',
         width: 1200,
         height: 630,
-        alt: "Terpeno's Fragances — Perfumes Árabes de Diseñador",
+        alt: "Terpeno's Fragances — Perfumes Árabes, de Nicho y de Diseñador",
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Terpeno's Fragances | Perfumes Árabes de Diseñador",
+    title: "Terpeno's Fragances | Perfumes Árabes, de Nicho y de Diseñador",
     description:
       'Catálogo exclusivo de fragancias premium. Consultá disponibilidad y precios referenciales directamente por WhatsApp.',
     images: ['/images/products/terpenos-fragances.jpeg'],

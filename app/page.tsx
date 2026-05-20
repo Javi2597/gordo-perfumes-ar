@@ -1,10 +1,12 @@
 import HeroSection from '@/components/HeroSection'
+import NosotrosSection from '@/components/NosotrosSection'
 import CatalogSection from '@/components/CatalogSection'
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
       <HeroSection />
+      <NosotrosSection />
       <CatalogSection />
 
       <footer className="border-t border-ink/[0.07] py-8 px-6">

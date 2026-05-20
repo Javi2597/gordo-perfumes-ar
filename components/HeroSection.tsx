@@ -51,17 +51,17 @@ export default function HeroSection() {
 
       {/* Vertical accent lines */}
       <span aria-hidden className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-transparent to-gold/25 pointer-events-none" />
-      <span aria-hidden className="absolute bottom-[56px] left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-t from-transparent to-gold/20 pointer-events-none" />
+      <span aria-hidden className="absolute bottom-[110px] left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-t from-transparent to-gold/20 pointer-events-none" />
 
       {/* Corner marks */}
       <span aria-hidden className="absolute top-7 left-7 w-10 h-px bg-gold/40" />
       <span aria-hidden className="absolute top-7 left-7 w-px h-10 bg-gold/40" />
       <span aria-hidden className="absolute top-7 right-7 w-10 h-px bg-gold/40" />
       <span aria-hidden className="absolute top-7 right-7 w-px h-10 bg-gold/40" />
-      <span aria-hidden className="absolute bottom-[57px] left-7 w-10 h-px bg-gold/40" />
-      <span aria-hidden className="absolute bottom-[57px] left-7 w-px h-10 bg-gold/40" />
-      <span aria-hidden className="absolute bottom-[57px] right-7 w-10 h-px bg-gold/40" />
-      <span aria-hidden className="absolute bottom-[57px] right-7 w-px h-10 bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[111px] left-7 w-10 h-px bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[111px] left-7 w-px h-10 bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[111px] right-7 w-10 h-px bg-gold/40" />
+      <span aria-hidden className="absolute bottom-[111px] right-7 w-px h-10 bg-gold/40" />
 
       {/* ── Main content ── */}
       <div className="relative flex-1 flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center max-w-5xl mx-auto w-full">
@@ -73,7 +73,7 @@ export default function HeroSection() {
           transition={{ duration: 1.3, ease: 'easeOut' }}
           className="text-gold text-[10px] md:text-xs uppercase tracking-[0.4em] mb-10 font-sans"
         >
-          Catálogo Exclusivo · Argentina
+          Perfumes Árabes · Nicho · Diseñador
         </motion.p>
 
         {/* Headline */}
@@ -98,11 +98,11 @@ export default function HeroSection() {
         {/* Subtitle */}
         <motion.p
           {...fadeUp(0.8)}
-          className="text-white/50 text-sm md:text-base max-w-[22rem] mx-auto leading-loose font-sans tracking-wide"
+          className="text-white/50 text-sm md:text-base max-w-[26rem] mx-auto leading-loose font-sans tracking-wide"
         >
-          Fragancias de autor seleccionadas con criterio.
+          Selección personalizada para encontrar tu fragancia ideal.
           <br />
-          100% originales · Consultá por WhatsApp.
+          Decants y originales · Envíos a toda Argentina.
         </motion.p>
 
         {/* Stats */}

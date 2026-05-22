@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Layers } from 'lucide-react'
 import { products } from '@/constants/products'
@@ -13,6 +13,17 @@ export default function CatalogSection() {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('Todos')
   const [searchQuery, setSearchQuery] = useState('')
   const [aromaFilter, setAromaFilter] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const cat = (e as CustomEvent<string>).detail as FilterCategory
+      setActiveFilter(cat)
+      setSearchQuery('')
+      setAromaFilter(null)
+    }
+    window.addEventListener('navbar-set-category', handler)
+    return () => window.removeEventListener('navbar-set-category', handler)
+  }, [])
 
   const allAromas = useMemo(
     () => [...new Set(products.flatMap((p) => p.notas_olfativas))].sort(),
@@ -31,7 +42,7 @@ export default function CatalogSection() {
   }, [activeFilter, searchQuery, aromaFilter])
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+    <section id="coleccion" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24">
       {/* Section header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

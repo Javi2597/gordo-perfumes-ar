@@ -19,7 +19,7 @@ function formatPrice(price: number) {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const { nombre, marca, categoria, notas_olfativas, precio_referencial, imagen, link_whatsapp } =
+  const { nombre, marca, categoria, descripcion, notas_olfativas, precio_referencial, imagen, link_whatsapp } =
     product
 
   return (
@@ -60,6 +60,9 @@ export default function ProductCard({ product }: { product: Product }) {
           </p>
           <h3 className="font-serif text-[1.2rem] leading-snug text-ink">{nombre}</h3>
         </div>
+
+        {/* Description */}
+        <p className="text-[11px] font-sans text-ink/55 leading-relaxed italic">{descripcion}</p>
 
         {/* Olfactory notes */}
         <div className="flex flex-wrap gap-1.5">

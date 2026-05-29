@@ -133,7 +133,7 @@ export default function Navbar() {
                   onClick={() => { close(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                   className="w-full flex items-center gap-4 py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
                 >
-                  <LottieIcon src="/anim/home.json" className="w-10 h-10 shrink-0" />
+                  <LottieIcon src="/anim/home.json" className="w-10 h-10 shrink-0" autoplay loopDelay={2000} />
                   Inicio
                 </button>
               </motion.div>
@@ -145,7 +145,7 @@ export default function Navbar() {
                   className="w-full flex items-center gap-4 justify-between py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
                 >
                   <span className="flex items-center gap-4">
-                    <LottieIcon src="/anim/coleccion.json" className="w-10 h-10 shrink-0" />
+                    <LottieIcon src="/anim/coleccion.json" className="w-10 h-10 shrink-0" autoplay loopDelay={2000} />
                     Colección
                   </span>
                   <ChevronDown
@@ -192,7 +192,7 @@ export default function Navbar() {
                   onClick={close}
                   className="flex items-center gap-4 py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
                 >
-                  <LottieIcon src="/anim/contacto.json" className="w-10 h-10 shrink-0" />
+                  <LottieIcon src="/anim/contacto.json" className="w-10 h-10 shrink-0" autoplay loopDelay={2000} />
                   Contacto
                   <MessageCircle className="w-4 h-4 text-gold/40 mb-0.5 ml-auto" />
                 </a>
@@ -202,9 +202,9 @@ export default function Navbar() {
               <motion.div variants={itemVariants}>
                 <button
                   onClick={() => scrollTo('faq')}
-                  className="w-full flex items-center gap-4 py-4 font-serif text-[1.35rem] min-[394px]:text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
+                  className="w-full flex items-center gap-4 py-4 font-serif text-[1.35rem] min-[394px]:text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05] text-left"
                 >
-                  <LottieIcon src="/anim/preguntasf.json" className="w-10 h-10 shrink-0" />
+                  <LottieIcon src="/anim/preguntasf.json" className="w-10 h-10 shrink-0" autoplay loopDelay={2000} />
                   Preguntas Frecuentes
                 </button>
               </motion.div>
@@ -218,7 +218,7 @@ export default function Navbar() {
                   onClick={close}
                   className="flex items-center gap-4 py-4 font-serif text-[1.75rem] text-white/75 hover:text-gold transition-colors duration-200"
                 >
-                  <LottieIcon src="/anim/iglogo.json" className="w-10 h-10 shrink-0" />
+                  <LottieIcon src="/anim/iglogo.json" className="w-10 h-10 shrink-0" autoplay loopDelay={2000} />
                   Instagram
                 </a>
               </motion.div>

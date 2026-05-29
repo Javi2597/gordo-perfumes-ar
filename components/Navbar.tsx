@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown, Instagram, MessageCircle } from 'lucide-react'
+import { Menu, X, ChevronDown, MessageCircle } from 'lucide-react'
+import LottieIcon from './LottieIcon'
 
 const INSTAGRAM_URL = 'https://www.instagram.com/terpenosfragances.ok'
 const WHATSAPP_URL = 'https://wa.me/541160461248'
@@ -130,8 +131,9 @@ export default function Navbar() {
               <motion.div variants={itemVariants}>
                 <button
                   onClick={() => { close(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                  className="w-full text-left py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
+                  className="w-full flex items-center gap-4 py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
                 >
+                  <LottieIcon src="/anim/home.json" className="w-10 h-10 shrink-0" />
                   Inicio
                 </button>
               </motion.div>
@@ -140,9 +142,12 @@ export default function Navbar() {
               <motion.div variants={itemVariants}>
                 <button
                   onClick={() => setColeccionOpen(!coleccionOpen)}
-                  className="w-full flex items-center justify-between py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
+                  className="w-full flex items-center gap-4 justify-between py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
                 >
-                  Colección
+                  <span className="flex items-center gap-4">
+                    <LottieIcon src="/anim/coleccion.json" className="w-10 h-10 shrink-0" />
+                    Colección
+                  </span>
                   <ChevronDown
                     className={`w-4 h-4 text-gold/60 transition-transform duration-300 ${coleccionOpen ? 'rotate-180' : ''}`}
                   />
@@ -185,10 +190,11 @@ export default function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={close}
-                  className="flex items-center gap-3 py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
+                  className="flex items-center gap-4 py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
                 >
+                  <LottieIcon src="/anim/contacto.json" className="w-10 h-10 shrink-0" />
                   Contacto
-                  <MessageCircle className="w-4 h-4 text-gold/40 mb-0.5" />
+                  <MessageCircle className="w-4 h-4 text-gold/40 mb-0.5 ml-auto" />
                 </a>
               </motion.div>
 
@@ -196,8 +202,9 @@ export default function Navbar() {
               <motion.div variants={itemVariants}>
                 <button
                   onClick={() => scrollTo('faq')}
-                  className="w-full text-left py-4 font-serif text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
+                  className="w-full flex items-center gap-4 py-4 font-serif text-[1.35rem] min-[394px]:text-[1.75rem] text-white/75 hover:text-white transition-colors duration-200 border-b border-white/[0.05]"
                 >
+                  <LottieIcon src="/anim/preguntasf.json" className="w-10 h-10 shrink-0" />
                   Preguntas Frecuentes
                 </button>
               </motion.div>
@@ -209,9 +216,9 @@ export default function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={close}
-                  className="flex items-center gap-3 py-4 font-serif text-[1.75rem] text-white/75 hover:text-gold transition-colors duration-200"
+                  className="flex items-center gap-4 py-4 font-serif text-[1.75rem] text-white/75 hover:text-gold transition-colors duration-200"
                 >
-                  <Instagram className="w-5 h-5" />
+                  <LottieIcon src="/anim/iglogo.json" className="w-10 h-10 shrink-0" />
                   Instagram
                 </a>
               </motion.div>

@@ -20,7 +20,7 @@ function formatPrice(price: number) {
 }
 
 export default function ProductCard({ product, onOpen }: { product: Product; onOpen?: () => void }) {
-  const { nombre, marca, categoria, descripcion, notas_olfativas, precio_referencial, imagen, link_whatsapp } =
+  const { nombre, marca, categoria, notas_olfativas, precio_referencial, imagen, link_whatsapp } =
     product
 
   return (
@@ -48,7 +48,7 @@ export default function ProductCard({ product, onOpen }: { product: Product; onO
           src={imagen}
           alt={`${nombre} — ${marca}`}
           fill
-          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
           className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         />
         {/* Gradient overlay at bottom of image */}
@@ -63,24 +63,21 @@ export default function ProductCard({ product, onOpen }: { product: Product; onO
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-5 gap-3.5">
+      <div className="flex flex-col flex-1 p-3.5 sm:p-5 gap-2.5 sm:gap-3.5">
         {/* Brand + Name */}
         <div>
-          <p className="text-gold text-[10px] font-sans uppercase tracking-[0.2em] mb-1.5">
+          <p className="text-gold text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.2em] mb-1 sm:mb-1.5">
             {marca}
           </p>
-          <h3 className="font-serif text-[1.2rem] leading-snug text-ink">{nombre}</h3>
+          <h3 className="font-serif text-base sm:text-[1.2rem] leading-snug text-ink">{nombre}</h3>
         </div>
 
-        {/* Description */}
-        <p className="text-[11px] font-sans text-ink/55 leading-relaxed italic">{descripcion}</p>
-
         {/* Olfactory notes */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1 sm:gap-1.5">
           {notas_olfativas.map((nota) => (
             <span
               key={nota}
-              className="text-[9px] font-sans uppercase tracking-wider text-ink/40 border border-ink/10 px-2 py-0.5"
+              className="text-[9px] font-sans uppercase tracking-wider text-ink/40 border border-ink/10 px-1.5 sm:px-2 py-0.5"
             >
               {nota}
             </span>
@@ -88,11 +85,11 @@ export default function ProductCard({ product, onOpen }: { product: Product; onO
         </div>
 
         {/* Price */}
-        <div className="mt-auto pt-3.5 border-t border-ink/[0.06]">
+        <div className="mt-auto pt-3 sm:pt-3.5 border-t border-ink/[0.06]">
           <p className="text-[9px] font-sans uppercase tracking-widest text-ink/35 mb-1">
             Precio referencial
           </p>
-          <p className="font-serif text-xl text-ink">{formatPrice(precio_referencial)}</p>
+          <p className="font-serif text-lg sm:text-xl text-ink">{formatPrice(precio_referencial)}</p>
         </div>
 
         {/* CTA */}
@@ -104,15 +101,16 @@ export default function ProductCard({ product, onOpen }: { product: Product; onO
           whileTap={{ scale: 0.97 }}
           className="
             flex items-center justify-center gap-2 mt-0.5
-            bg-ink text-white text-[11px] font-sans uppercase tracking-widest
-            py-3.5 px-4
+            bg-ink text-white text-[10px] sm:text-[11px] font-sans uppercase tracking-wider sm:tracking-widest
+            py-3 sm:py-3.5 px-3 sm:px-4
             hover:bg-gold
             transition-colors duration-300
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2
           "
         >
           <MessageCircle className="w-3.5 h-3.5 shrink-0" />
-          Consultar disponibilidad
+          <span className="sm:hidden">Consultar</span>
+          <span className="hidden sm:inline">Consultar disponibilidad</span>
         </motion.a>
       </div>
     </motion.article>

@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@/constants/products'
 
@@ -18,7 +19,7 @@ function formatPrice(price: number) {
   }).format(price)
 }
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product, onOpen }: { product: Product; onOpen?: () => void }) {
   const { nombre, marca, categoria, descripcion, notas_olfativas, precio_referencial, imagen, link_whatsapp } =
     product
 
@@ -29,16 +30,26 @@ export default function ProductCard({ product }: { product: Product }) {
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
       whileHover={{ y: -5 }}
-      className="group relative flex flex-col bg-white border border-ink/[0.07] hover:border-gold/50 transition-all duration-400 hover:shadow-[0_8px_32px_rgba(197,160,89,0.12)]"
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onOpen?.()
+        }
+      }}
+      aria-label={`Ver ficha de ${nombre} de ${marca}`}
+      className="group relative flex flex-col bg-white border border-ink/[0.07] hover:border-gold/50 transition-all duration-400 hover:shadow-[0_8px_32px_rgba(197,160,89,0.12)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
     >
       {/* Image */}
       <div className="relative overflow-hidden" style={{ aspectRatio: '4/5' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={imagen}
           alt={`${nombre} — ${marca}`}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-          loading="lazy"
+          fill
+          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         />
         {/* Gradient overlay at bottom of image */}
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/30 to-transparent" />
@@ -89,6 +100,7 @@ export default function ProductCard({ product }: { product: Product }) {
           href={link_whatsapp}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
           whileTap={{ scale: 0.97 }}
           className="
             flex items-center justify-center gap-2 mt-0.5

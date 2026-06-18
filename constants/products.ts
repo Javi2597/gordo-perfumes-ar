@@ -2,6 +2,7 @@ export type Category = 'Hombre' | 'Mujer' | 'Unisex'
 
 export interface Product {
   id: string
+  slug: string
   nombre: string
   marca: string
   categoria: Category
@@ -19,7 +20,7 @@ const wa = (nombre: string) =>
     `Hola, me interesa obtener información sobre el perfume ${nombre}`
   )}`
 
-export const products: Product[] = [
+const rawProducts: Omit<Product, 'slug'>[] = [
   { id: '1', nombre: 'Tharwah Gold', marca: 'LATTAFA', categoria: 'Unisex', descripcion: 'Amaderado especiado, elegante y cálido. Salida fresca con especias suaves, corazón aromático y fondo ámbar amaderado con aire lujoso.', notas_olfativas: ['Amaderado', 'Especiado', 'Ámbar'], precio_referencial: 115000, imagen: '/perfumes/tharwah-gold.webp', link_whatsapp: wa('Tharwah Gold') },
   { id: '2', nombre: 'Asad Bourbon', marca: 'LATTAFA', categoria: 'Hombre', descripcion: 'Vainillado especiado y licoroso. Dulce masculino con canela, cacao y maderas profundas tipo bourbon.', notas_olfativas: ['Vainilla', 'Especiado', 'Amaderado'], precio_referencial: 80000, imagen: '/perfumes/asad-bourbon.webp', link_whatsapp: wa('Asad Bourbon') },
   { id: '3', nombre: 'The Kingdom', marca: 'LATTAFA', categoria: 'Hombre', descripcion: 'Ámbar dulce especiado. Sensación sofisticada y nocturna, con vainilla cremosa, especias y maderas cálidas.', notas_olfativas: ['Ámbar', 'Dulce', 'Especiado'], precio_referencial: 80000, imagen: '/perfumes/the-kingdom.webp', link_whatsapp: wa('The Kingdom') },
@@ -63,3 +64,12 @@ export const products: Product[] = [
   { id: '46', nombre: 'Bharara King EDP 100ml', marca: 'BHARARA', categoria: 'Hombre', descripcion: 'Frutal tropical almizclado. Muy vibrante y potente con frutas exóticas y fondo limpio.', notas_olfativas: ['Frutal', 'Tropical', 'Almizcado'], precio_referencial: 130000, imagen: '/perfumes/bharara-king-edp-100ml.webp', link_whatsapp: wa('Bharara King EDP 100ml') },
   { id: '47', nombre: 'Liquid Brun', marca: 'FRENCH AVENUE', categoria: 'Hombre', descripcion: 'Amaderado gourmand elegante. Vainilla tostada, cacao y maderas cálidas con sensación premium.', notas_olfativas: ['Amaderado', 'Vainilla', 'Gourmand'], precio_referencial: 96000, imagen: '/perfumes/liquid-brun.webp', link_whatsapp: wa('Liquid Brun') },
 ]
+
+export const products: Product[] = rawProducts.map((p) => ({
+  ...p,
+  slug: p.imagen.replace('/perfumes/', '').replace(/\.webp$/, ''),
+}))
+
+export function getProductBySlug(slug: string): Product | undefined {
+  return products.find((p) => p.slug === slug)
+}

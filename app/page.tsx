@@ -3,10 +3,12 @@ import NosotrosSection from '@/components/NosotrosSection'
 import CatalogSection from '@/components/CatalogSection'
 import FaqSection from '@/components/FaqSection'
 import Navbar from '@/components/Navbar'
+import StructuredData from '@/components/StructuredData'
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
+      <StructuredData />
       <Navbar />
       <HeroSection />
       <NosotrosSection />

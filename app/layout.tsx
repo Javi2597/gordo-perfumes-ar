@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "Terpeno's Fragances",
   description:
     'Catálogo exclusivo de fragancias premium. Consultá disponibilidad y precios referenciales directamente por WhatsApp.',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     url: 'https://www.terpenosfragances.com.ar',

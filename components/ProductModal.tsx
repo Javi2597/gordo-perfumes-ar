@@ -192,6 +192,7 @@ export default function ProductModal({ products, index, onClose, onNavigate }: P
               <ShareMenu
                 url={productUrl(product.slug)}
                 title={`${product.nombre} — ${product.marca}`}
+                price={formatPrice(product.precio_referencial)}
               />
             </div>
           </motion.div>

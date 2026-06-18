@@ -33,7 +33,7 @@ export async function generateMetadata(
   if (!product) return {}
 
   const title = `${product.nombre} — ${product.marca}`
-  const description = product.descripcion
+  const description = `${formatPrice(product.precio_referencial)} — ${product.descripcion}`
   const image = `${SITE_URL}${product.imagen}`
   const url = productUrl(product.slug)
 
@@ -168,7 +168,7 @@ export default async function PerfumePage(
               Consultar disponibilidad
             </a>
 
-            <ShareMenu url={productUrl(product.slug)} title={`${product.nombre} — ${product.marca}`} />
+            <ShareMenu url={productUrl(product.slug)} title={`${product.nombre} — ${product.marca}`} price={formatPrice(product.precio_referencial)} />
           </div>
         </div>
       </div>

@@ -7,20 +7,22 @@ import { Check, Link2, Share2 } from 'lucide-react'
 interface ShareMenuProps {
   url: string
   title: string
+  price?: string
 }
 
-const networks = (url: string, title: string) => {
+const networks = (url: string, text: string) => {
   const u = encodeURIComponent(url)
-  const t = encodeURIComponent(title)
+  const t = encodeURIComponent(text)
   return [
-    { name: 'WhatsApp', href: `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}` },
+    { name: 'WhatsApp', href: `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}` },
     { name: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
     { name: 'Telegram', href: `https://t.me/share/url?url=${u}&text=${t}` },
     { name: 'X', href: `https://twitter.com/intent/tweet?url=${u}&text=${t}` },
   ]
 }
 
-export default function ShareMenu({ url, title }: ShareMenuProps) {
+export default function ShareMenu({ url, title, price }: ShareMenuProps) {
+  const shareText = price ? `${title} — ${price}` : title
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -37,7 +39,7 @@ export default function ShareMenu({ url, title }: ShareMenuProps) {
     // Compartir nativo en mobile (WhatsApp, Instagram, etc.)
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title, text: title, url })
+        await navigator.share({ title, text: shareText, url })
         return
       } catch {
         // cancelado por el usuario → no hacemos nada
@@ -76,7 +78,7 @@ export default function ShareMenu({ url, title }: ShareMenuProps) {
             transition={{ duration: 0.18 }}
             className="absolute left-0 right-0 bottom-full mb-2 z-30 bg-white border border-ink/10 shadow-xl p-2 flex flex-col"
           >
-            {networks(url, title).map((n) => (
+            {networks(url, shareText).map((n) => (
               <a
                 key={n.name}
                 href={n.href}

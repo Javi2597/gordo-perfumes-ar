@@ -113,8 +113,8 @@ export default function HeroSection() {
           className="flex items-center gap-6 sm:gap-10 mt-14"
         >
           {[
-            { value: '+42', label: 'Fragancias' },
-            { value: '10', label: 'Marcas' },
+            { value: '+55', label: 'Fragancias' },
+            { value: '11', label: 'Marcas' },
             { value: '100%', label: 'Originales' },
           ].map(({ value, label }, i, arr) => (
             <div key={label} className="flex items-center gap-6 sm:gap-10">

@@ -74,9 +74,13 @@ export default function Navbar() {
             transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             className="fixed top-0 inset-x-0 z-50 h-16 bg-ink/95 backdrop-blur-md border-b border-gold/10 flex items-center px-6"
           >
-            <span className="font-serif text-[15px] text-white/80 tracking-wide">
+            <button
+              onClick={() => { close(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+              aria-label="Ir al inicio"
+              className="font-serif text-[15px] text-white/80 tracking-wide hover:text-white transition-colors duration-200"
+            >
               Terpeno&apos;s <em className="not-italic text-gold">Fragances</em>
-            </span>
+            </button>
 
             <button
               onClick={() => setMenuOpen(true)}
@@ -108,9 +112,13 @@ export default function Navbar() {
 
             {/* Header del overlay */}
             <div className="relative flex items-center justify-between px-6 h-16 border-b border-gold/10 shrink-0">
-              <span className="font-serif text-[15px] text-white/80 tracking-wide">
+              <button
+                onClick={() => { close(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                aria-label="Ir al inicio"
+                className="font-serif text-[15px] text-white/80 tracking-wide hover:text-white transition-colors duration-200"
+              >
                 Terpeno&apos;s <em className="not-italic text-gold">Fragances</em>
-              </span>
+              </button>
               <button
                 onClick={close}
                 aria-label="Cerrar menú"

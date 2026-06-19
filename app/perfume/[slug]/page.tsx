@@ -102,7 +102,7 @@ export default async function PerfumePage(
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* Image */}
           <div
-            className="relative w-full md:w-1/2 shrink-0 bg-ink/[0.03] border border-ink/[0.07]"
+            className="relative w-full md:w-1/2 shrink-0 bg-white border border-ink/[0.07]"
             style={{ aspectRatio: '4/5' }}
           >
             <Image
@@ -111,7 +111,7 @@ export default async function PerfumePage(
               fill
               priority
               sizes="(min-width: 768px) 448px, 100vw"
-              className="object-cover"
+              className="object-contain p-6"
             />
             <span
               className={`absolute top-3 left-3 text-[9px] font-sans uppercase tracking-[0.15em] px-2.5 py-1 ${CATEGORY_STYLE[product.categoria]}`}

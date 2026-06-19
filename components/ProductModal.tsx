@@ -84,25 +84,25 @@ export default function ProductModal({ products, index, onClose, onNavigate }: P
       <button
         onClick={onClose}
         aria-label="Cerrar ficha"
-        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center justify-center w-10 h-10 text-white/70 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-ink/90 hover:bg-ink text-white shadow-[0_2px_12px_rgba(0,0,0,0.45)] ring-1 ring-white/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
       >
-        <X className="w-6 h-6" strokeWidth={1.5} />
+        <X className="w-5 h-5" strokeWidth={2} />
       </button>
 
       {/* Prev / Next */}
       <button
         onClick={(e) => { e.stopPropagation(); goPrev() }}
         aria-label="Perfume anterior"
-        className="absolute left-2 sm:left-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        className="absolute left-2 sm:left-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-ink/80 hover:bg-ink text-white shadow-[0_2px_12px_rgba(0,0,0,0.45)] ring-1 ring-white/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
       >
-        <ChevronLeft className="w-6 h-6" strokeWidth={1.5} />
+        <ChevronLeft className="w-6 h-6" strokeWidth={2} />
       </button>
       <button
         onClick={(e) => { e.stopPropagation(); goNext() }}
         aria-label="Perfume siguiente"
-        className="absolute right-2 sm:right-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        className="absolute right-2 sm:right-6 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-ink/80 hover:bg-ink text-white shadow-[0_2px_12px_rgba(0,0,0,0.45)] ring-1 ring-white/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
       >
-        <ChevronRight className="w-6 h-6" strokeWidth={1.5} />
+        <ChevronRight className="w-6 h-6" strokeWidth={2} />
       </button>
 
       {/* Panel */}
@@ -126,13 +126,13 @@ export default function ProductModal({ products, index, onClose, onNavigate }: P
             className="flex flex-col md:flex-row w-full"
           >
             {/* Image */}
-            <div className="relative w-full md:w-1/2 shrink-0 bg-ink/[0.03]" style={{ aspectRatio: '4/5' }}>
+            <div className="relative w-full md:w-1/2 shrink-0 bg-white" style={{ aspectRatio: '4/5' }}>
               <Image
                 src={product.imagen}
                 alt={`${product.nombre} — ${product.marca}`}
                 fill
                 sizes="(min-width: 768px) 384px, 100vw"
-                className="object-cover"
+                className="object-contain p-4"
               />
               <span
                 className={`absolute top-3 left-3 text-[9px] font-sans uppercase tracking-[0.15em] px-2.5 py-1 ${CATEGORY_STYLE[product.categoria]}`}

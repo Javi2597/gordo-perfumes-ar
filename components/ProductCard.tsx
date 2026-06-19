@@ -43,16 +43,14 @@ export default function ProductCard({ product, onOpen }: { product: Product; onO
       className="group relative flex flex-col bg-white border border-ink/[0.07] hover:border-gold/50 transition-all duration-400 hover:shadow-[0_8px_32px_rgba(197,160,89,0.12)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
     >
       {/* Image */}
-      <div className="relative overflow-hidden" style={{ aspectRatio: '4/5' }}>
+      <div className="relative overflow-hidden bg-white" style={{ aspectRatio: '4/5' }}>
         <Image
           src={imagen}
           alt={`${nombre} — ${marca}`}
           fill
           sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          className="object-contain p-4 transition-transform duration-700 group-hover:scale-[1.04]"
         />
-        {/* Gradient overlay at bottom of image */}
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/30 to-transparent" />
 
         {/* Category badge */}
         <span

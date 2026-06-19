@@ -40,7 +40,7 @@ export default function ProductCard({ product, onOpen }: { product: Product; onO
         }
       }}
       aria-label={`Ver ficha de ${nombre} de ${marca}`}
-      className="group relative flex flex-col bg-white border border-ink/[0.07] hover:border-gold/50 transition-all duration-400 hover:shadow-[0_8px_32px_rgba(197,160,89,0.12)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+      className="group relative flex flex-col h-full bg-white border border-ink/[0.07] hover:border-gold/50 transition-all duration-400 hover:shadow-[0_8px_32px_rgba(197,160,89,0.12)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
     >
       {/* Image */}
       <div className="relative overflow-hidden bg-white" style={{ aspectRatio: '4/5' }}>

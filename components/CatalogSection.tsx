@@ -121,6 +121,7 @@ export default function CatalogSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: Math.min(i, 8) * 0.06, ease: 'easeOut' }}
+                className="h-full"
               >
                 <ProductCard product={product} onOpen={() => setSelectedIndex(i)} />
               </motion.div>

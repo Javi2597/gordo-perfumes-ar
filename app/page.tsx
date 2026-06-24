@@ -24,6 +24,17 @@ export default function HomePage() {
             Los precios son referenciales y pueden variar · Consultar disponibilidad
           </p>
         </div>
+        <p className="mt-6 text-center text-[10px] font-sans tracking-wide text-ink/30">
+          Web por{' '}
+          <a
+            href="https://pixelforge.com.ar/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold hover:opacity-70 transition-opacity"
+          >
+            Pixel Forge
+          </a>
+        </p>
       </footer>
     </main>
   )

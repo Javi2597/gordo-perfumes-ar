@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, MessageCircle } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react'
 import { getProductBySlug, products } from '@/constants/products'
 import { SITE_NAME, SITE_URL, productUrl } from '@/constants/site'
 import ShareMenu from '@/components/ShareMenu'
+import KeyboardPager from '@/components/KeyboardPager'
 
 const CATEGORY_STYLE: Record<string, string> = {
   Hombre: 'bg-slate-100 text-slate-600',
@@ -66,6 +67,14 @@ export default async function PerfumePage(
   const product = getProductBySlug(slug)
   if (!product) notFound()
 
+  const total = products.length
+  const currentIndex = products.findIndex((p) => p.slug === slug)
+  const prev = products[(currentIndex - 1 + total) % total]
+  const next = products[(currentIndex + 1) % total]
+
+  const arrowClass =
+    'fixed top-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-11 h-11 rounded-full bg-ink/80 hover:bg-ink text-white shadow-[0_2px_12px_rgba(0,0,0,0.45)] ring-1 ring-white/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold'
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -90,14 +99,36 @@ export default async function PerfumePage(
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/* Navegación entre perfumes */}
+      <KeyboardPager prevSlug={prev.slug} nextSlug={next.slug} />
+      <Link
+        href={`/perfume/${prev.slug}`}
+        aria-label={`Perfume anterior: ${prev.nombre}`}
+        className={`${arrowClass} left-2 sm:left-6`}
+      >
+        <ChevronLeft className="w-6 h-6" strokeWidth={2} />
+      </Link>
+      <Link
+        href={`/perfume/${next.slug}`}
+        aria-label={`Perfume siguiente: ${next.nombre}`}
+        className={`${arrowClass} right-2 sm:right-6`}
+      >
+        <ChevronRight className="w-6 h-6" strokeWidth={2} />
+      </Link>
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-        <Link
-          href="/#coleccion"
-          className="inline-flex items-center gap-2 text-[11px] font-sans uppercase tracking-widest text-ink/50 hover:text-ink transition-colors mb-8"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Volver a la colección
-        </Link>
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/#coleccion"
+            className="inline-flex items-center gap-2 text-[11px] font-sans uppercase tracking-widest text-ink/50 hover:text-ink transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Volver a la colección
+          </Link>
+          <span className="text-[11px] font-sans uppercase tracking-widest text-ink/35 tabular-nums">
+            {currentIndex + 1} / {total}
+          </span>
+        </div>
 
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
           {/* Image */}

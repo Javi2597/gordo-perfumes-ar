@@ -20,7 +20,7 @@ function formatPrice(price: number) {
 }
 
 export default function ProductCard({ product, onOpen }: { product: Product; onOpen?: () => void }) {
-  const { nombre, marca, categoria, notas_olfativas, precio_referencial, imagen, link_whatsapp } =
+  const { nombre, marca, categoria, notas_olfativas, ml, precio_referencial, imagen, link_whatsapp } =
     product
 
   return (
@@ -85,7 +85,7 @@ export default function ProductCard({ product, onOpen }: { product: Product; onO
         {/* Price */}
         <div className="mt-auto pt-3 sm:pt-3.5 border-t border-ink/[0.06]">
           <p className="text-[9px] font-sans uppercase tracking-widest text-ink/35 mb-1">
-            Precio referencial
+            Precio referencial · {ml}ml
           </p>
           <p className="font-serif text-lg sm:text-xl text-ink">{formatPrice(precio_referencial)}</p>
         </div>

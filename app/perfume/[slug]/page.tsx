@@ -153,7 +153,7 @@ export default async function PerfumePage(
 
             <div className="mt-auto pt-4 border-t border-ink/[0.06]">
               <p className="text-[9px] font-sans uppercase tracking-widest text-ink/35 mb-1">
-                Precio referencial
+                Precio referencial · {product.ml}ml
               </p>
               <p className="font-serif text-2xl text-ink">{formatPrice(product.precio_referencial)}</p>
             </div>

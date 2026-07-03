@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight, MessageCircle, X } from 'lucide-react'
+import Link from 'next/link'
+import { ChevronLeft, ChevronRight, MessageCircle, ShoppingBag, X } from 'lucide-react'
 import type { Product } from '@/constants/products'
 import { productUrl } from '@/constants/site'
 import ShareMenu from './ShareMenu'
@@ -179,11 +180,19 @@ export default function ProductModal({ products, index, onClose, onNavigate }: P
                 <p className="font-serif text-2xl text-ink">{formatPrice(product.precio_referencial)}</p>
               </div>
 
+              <Link
+                href={`/checkout/${product.slug}`}
+                className="flex items-center justify-center gap-2 bg-ink text-white text-[11px] font-sans uppercase tracking-widest py-3.5 px-4 hover:bg-gold transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+              >
+                <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+                Comprar
+              </Link>
+
               <a
                 href={product.link_whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-ink text-white text-[11px] font-sans uppercase tracking-widest py-3.5 px-4 hover:bg-gold transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+                className="flex items-center justify-center gap-2 border border-ink/15 text-ink text-[11px] font-sans uppercase tracking-widest py-3.5 px-4 hover:border-ink/40 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
               >
                 <MessageCircle className="w-3.5 h-3.5 shrink-0" />
                 Consultar disponibilidad

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { Payment } from 'mercadopago'
 import { mpClient, isMpConfigured, MP_WEBHOOK_SECRET } from '@/lib/mercadopago'
-import { upsertOrderFromPayment } from '@/lib/orders'
+import { upsertOrderFromPayment, updateOrderById } from '@/lib/orders'
 import { products } from '@/constants/products'
 
 export const runtime = 'nodejs'
@@ -78,20 +78,33 @@ export async function POST(request: Request) {
       const payment = await new Payment(mpClient).get({ id: dataId })
       console.log('[mp/webhook] pago', dataId, '→', payment.status, payment.status_detail)
 
-      // Reconciliamos la orden: si existe, actualizamos el estado; si no
-      // (el webhook llegó antes del INSERT), la creamos desde el metadata.
-      const metadata = (payment.metadata ?? {}) as { product_id?: string; product_slug?: string }
-      const product = products.find((p) => p.id === metadata.product_id)
-      await upsertOrderFromPayment({
-        productId: metadata.product_id ?? 'desconocido',
-        productName: product ? `${product.nombre} — ${product.marca}` : 'Producto desconocido',
-        productSlug: metadata.product_slug ?? product?.slug ?? null,
-        amount: Math.round(payment.transaction_amount ?? product?.precio_referencial ?? 0),
-        status: payment.status ?? 'unknown',
-        statusDetail: payment.status_detail ?? null,
-        paymentId: String(dataId),
-        payerEmail: payment.payer?.email ?? null,
-      })
+      // Flujo wallet: la orden se creó antes con external_reference = id de la orden.
+      // La actualizamos por ese id y le seteamos el payment_id.
+      if (payment.external_reference) {
+        await updateOrderById(payment.external_reference, {
+          status: payment.status ?? 'unknown',
+          statusDetail: payment.status_detail ?? null,
+          paymentId: String(dataId),
+        })
+      } else {
+        // Flujo tarjeta: reconciliamos por payment_id; si no existe la orden
+        // (el webhook llegó antes del INSERT), la creamos desde el metadata.
+        const metadata = (payment.metadata ?? {}) as {
+          product_id?: string
+          product_slug?: string
+        }
+        const product = products.find((p) => p.id === metadata.product_id)
+        await upsertOrderFromPayment({
+          productId: metadata.product_id ?? 'desconocido',
+          productName: product ? `${product.nombre} — ${product.marca}` : 'Producto desconocido',
+          productSlug: metadata.product_slug ?? product?.slug ?? null,
+          amount: Math.round(payment.transaction_amount ?? product?.precio_referencial ?? 0),
+          status: payment.status ?? 'unknown',
+          statusDetail: payment.status_detail ?? null,
+          paymentId: String(dataId),
+          payerEmail: payment.payer?.email ?? null,
+        })
+      }
     } catch (err) {
       console.error('[mp/webhook] error consultando el pago', dataId, err)
       // Devolvemos 200 igual: MP reintenta ante 5xx; el error ya quedó logueado.

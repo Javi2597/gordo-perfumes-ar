@@ -86,8 +86,8 @@ export default function CheckoutBrick({
             paymentMethods: {
               creditCard: 'all',
               debitCard: 'all',
-              // Dinero en cuenta de Mercado Pago (transferencia vía MP).
-              mercadoPago: 'all',
+              // El "dinero en cuenta" se ofrece como método aparte (WalletCheckout),
+              // que usa una preferencia + redirección a Mercado Pago.
             },
           },
           callbacks: {

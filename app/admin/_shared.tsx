@@ -4,7 +4,8 @@ import { setOrderStatusAction } from './actions'
 // Helpers y componentes compartidos por las páginas del admin.
 
 const METHOD_LABEL: Record<string, string> = {
-  mercadopago: 'Mercado Pago',
+  mercadopago: 'Tarjeta',
+  wallet: 'MP dinero en cuenta',
   transferencia: 'Transferencia',
   efectivo: 'Efectivo',
 }

@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { CreditCard, Landmark, Banknote } from 'lucide-react'
+import { CreditCard, Landmark, Banknote, Wallet } from 'lucide-react'
 import { SHIPPING_ZONES, type ShippingZone } from '@/constants/shipping'
 import { PAYMENT_LABELS, type PaymentMethod } from '@/constants/payment'
 import CheckoutBrick from './CheckoutBrick'
 import ManualPayment from './ManualPayment'
+import WalletCheckout from './WalletCheckout'
 import {
   EMPTY_SHIPPING,
   REQUIRED_SHIPPING,
@@ -29,12 +30,14 @@ function formatPrice(price: number) {
 
 const METHOD_ICON = {
   mercadopago: CreditCard,
+  wallet: Wallet,
   transferencia: Landmark,
   efectivo: Banknote,
 } as const
 
 const METHOD_HINT: Record<PaymentMethod, string> = {
-  mercadopago: 'Tarjeta de crédito, débito o dinero en cuenta',
+  mercadopago: 'Pagá con tu tarjeta sin salir del sitio',
+  wallet: 'Pagá con el saldo o medios de tu cuenta de Mercado Pago',
   transferencia: 'Transferí a nuestro alias y confirmá',
   efectivo: 'Pagás al recibir el paquete',
 }
@@ -198,6 +201,8 @@ export default function CheckoutForm({ productId, slug, productPrice }: Checkout
           payerEmail={email}
           dataRef={dataRef}
         />
+      ) : method === 'wallet' ? (
+        <WalletCheckout productId={productId} dataRef={dataRef} />
       ) : (
         <ManualPayment method={method} productId={productId} dataRef={dataRef} />
       )}

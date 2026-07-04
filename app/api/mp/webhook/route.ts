@@ -68,8 +68,12 @@ export async function POST(request: Request) {
       console.warn('[mp/webhook] Firma inválida — notificación rechazada.')
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
+  } else if (process.env.NODE_ENV === 'production') {
+    // En producción exigimos el secret: sin él no validamos firmas y no procesamos.
+    console.error('[mp/webhook] MP_WEBHOOK_SECRET no configurado en producción — rechazado.')
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 401 })
   } else {
-    console.warn('[mp/webhook] MP_WEBHOOK_SECRET no configurado: firma no validada.')
+    console.warn('[mp/webhook] MP_WEBHOOK_SECRET no configurado (dev): firma no validada.')
   }
 
   // Solo nos interesan las notificaciones de pago.

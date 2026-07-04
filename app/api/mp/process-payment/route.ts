@@ -145,9 +145,12 @@ export async function POST(request: Request) {
       status_detail: result.status_detail,
     })
   } catch (err: unknown) {
-    // El SDK expone el detalle del error de la API en err.message / err.cause.
-    const message = err instanceof Error ? err.message : 'Error al procesar el pago.'
+    // Logueamos el detalle del SDK en el server, pero al cliente solo un mensaje genérico
+    // (no exponemos internals de la API de pagos).
     console.error('[mp/process-payment] error:', err)
-    return NextResponse.json({ error: message }, { status: 502 })
+    return NextResponse.json(
+      { error: 'No se pudo procesar el pago. Intentá nuevamente o probá otro medio de pago.' },
+      { status: 502 }
+    )
   }
 }

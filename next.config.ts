@@ -26,6 +26,16 @@ const SECRET_SHAPES: { name: string; test: RegExp }[] = [
   { name: 'clave privada', test: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
 ]
 
+/**
+ * Pista para el log: largo y primeros caracteres, sin volcar el valor entero.
+ * Alcanza para ver si sobran comillas, espacios o se pegó el nombre de la
+ * variable adentro del valor, sin publicar una credencial en los logs.
+ */
+function hint(value: string): string {
+  const head = value.slice(0, 12).replace(/[\r\n\t]/g, '·')
+  return `${value.length} caracteres, empieza con "${head}…"`
+}
+
 function assertNoSecretsInPublicEnv(): void {
   const leaks: string[] = []
 
@@ -39,14 +49,17 @@ function assertNoSecretsInPublicEnv(): void {
 
   // Chequeo positivo del único NEXT_PUBLIC_ sensible que usamos hoy: la Public
   // Key de MP tiene que ser <prefijo>-<uuid>. Cualquier otra cosa es sospechosa.
-  const mpPublic = process.env.NEXT_PUBLIC_MP_PUBLIC_KEY?.trim()
+  const mpPublicRaw = process.env.NEXT_PUBLIC_MP_PUBLIC_KEY
+  const mpPublic = mpPublicRaw?.trim()
   if (
     mpPublic &&
     !/^(APP_USR|TEST)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(mpPublic)
   ) {
     leaks.push(
-      '  · NEXT_PUBLIC_MP_PUBLIC_KEY no tiene forma de Public Key (APP_USR-<uuid>) — ' +
-        '¿pegaste el Access Token por error?'
+      '  · NEXT_PUBLIC_MP_PUBLIC_KEY no tiene forma de Public Key (APP_USR-<uuid>).\n' +
+        `    Valor cargado: ${hint(mpPublicRaw ?? '')}\n` +
+        '    Revisá que no tenga comillas, espacios, saltos de línea, ni el nombre\n' +
+        '    de la variable pegado adentro del valor.'
     )
   }
 

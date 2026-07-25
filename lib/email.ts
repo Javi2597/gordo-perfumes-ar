@@ -18,7 +18,7 @@ import { WHATSAPP_NUMBER } from '@/constants/products'
  * de los handlers al guardar la orden).
  */
 
-const DEFAULT_RECIPIENTS = 'lexozk.33@gmail.com, javi.bellido25@gmail.com'
+const DEFAULT_RECIPIENTS = 'lexozk.33@gmail.com'
 const DEFAULT_FROM = `${SITE_NAME} <pedidos@terpenosfragances.com.ar>`
 
 // Paleta de marca (para el correo del cliente).

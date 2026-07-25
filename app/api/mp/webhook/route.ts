@@ -3,7 +3,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 import { Payment } from 'mercadopago'
 import { mpClient, isMpConfigured, MP_WEBHOOK_SECRET } from '@/lib/mercadopago'
 import { upsertOrderFromPayment, updateOrderById, getOrderById } from '@/lib/orders'
-import { sendOrderNotification } from '@/lib/email'
+import { sendOrderEmails } from '@/lib/email'
 import { products } from '@/constants/products'
 
 export const runtime = 'nodejs'
@@ -98,9 +98,9 @@ export async function POST(request: Request) {
         if (payment.status === 'approved' && before?.status !== 'approved') {
           try {
             const order = await getOrderById(payment.external_reference)
-            if (order) await sendOrderNotification(order)
+            if (order) await sendOrderEmails(order)
           } catch (mailErr) {
-            console.error('[mp/webhook] no se pudo enviar el aviso:', mailErr)
+            console.error('[mp/webhook] no se pudieron enviar los correos:', mailErr)
           }
         }
       } else {

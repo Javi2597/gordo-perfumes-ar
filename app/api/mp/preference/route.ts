@@ -3,7 +3,7 @@ import { Preference } from 'mercadopago'
 import { mpClient, isMpConfigured } from '@/lib/mercadopago'
 import { createOrder, type Shipping } from '@/lib/orders'
 import { products } from '@/constants/products'
-import { getShippingCost, isShippingZone } from '@/constants/shipping'
+import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
 import { SITE_URL } from '@/constants/site'
 
 export const runtime = 'nodejs'
@@ -62,11 +62,11 @@ export async function POST(request: Request) {
     notes: sp.notes ? String(sp.notes).trim() : null,
   }
 
-  // Total (producto + envío) resuelto en el server.
-  const shippingCost = getShippingCost(body.zone)
-  if (!isShippingZone(body.zone) || shippingCost === null) {
+  // Total (producto + envío) resuelto en el server. RETIRO solo en productos habilitados.
+  if (!isZoneAllowedForProduct(product.id, body.zone)) {
     return NextResponse.json({ error: 'Elegí una zona de envío válida.' }, { status: 400 })
   }
+  const shippingCost = getShippingCost(body.zone) ?? 0
   const total = product.precio_referencial + shippingCost
 
   // 1) Orden pendiente. Su id va como external_reference de la preferencia.

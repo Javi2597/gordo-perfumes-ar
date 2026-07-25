@@ -3,9 +3,9 @@ import { randomUUID } from 'node:crypto'
 import { Payment } from 'mercadopago'
 import { mpClient, isMpConfigured } from '@/lib/mercadopago'
 import { createOrder, getOrderById, type Shipping } from '@/lib/orders'
-import { sendOrderNotification } from '@/lib/email'
+import { sendOrderEmails } from '@/lib/email'
 import { products } from '@/constants/products'
-import { getShippingCost, isShippingZone } from '@/constants/shipping'
+import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
 
 // Este handler usa el SDK de Node (crypto, access token secreto): runtime Node.
 export const runtime = 'nodejs'
@@ -84,10 +84,11 @@ export async function POST(request: Request) {
   }
 
   // Zona de envío: obligatoria. El costo se resuelve en el server (no del cliente).
-  const shippingCost = getShippingCost(body.zone)
-  if (!isShippingZone(body.zone) || shippingCost === null) {
+  // RETIRO solo se acepta en los productos habilitados.
+  if (!isZoneAllowedForProduct(product.id, body.zone)) {
     return NextResponse.json({ error: 'Elegí una zona de envío válida.' }, { status: 400 })
   }
+  const shippingCost = getShippingCost(body.zone) ?? 0
   const total = product.precio_referencial + shippingCost
 
   const payment = new Payment(mpClient)
@@ -137,14 +138,14 @@ export async function POST(request: Request) {
         shippingCost,
       })
 
-      // Aviso por correo solo en pagos exitosos (approved / in_process).
-      // Aislado: un fallo de email no afecta la respuesta del pago.
+      // Correos solo en pagos exitosos (approved / in_process): aviso interno +
+      // confirmación al cliente. Aislado: un fallo de email no afecta el pago.
       if (orderId && (result.status === 'approved' || result.status === 'in_process')) {
         try {
           const order = await getOrderById(orderId)
-          if (order) await sendOrderNotification(order)
+          if (order) await sendOrderEmails(order)
         } catch (mailErr) {
-          console.error('[mp/process-payment] no se pudo enviar el aviso:', mailErr)
+          console.error('[mp/process-payment] no se pudieron enviar los correos:', mailErr)
         }
       }
     } catch (dbErr) {

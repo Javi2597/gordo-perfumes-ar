@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createOrder, getOrderById, type Shipping } from '@/lib/orders'
-import { sendOrderNotification } from '@/lib/email'
+import { sendOrderEmails } from '@/lib/email'
 import { products } from '@/constants/products'
-import { getShippingCost, isShippingZone } from '@/constants/shipping'
+import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
 
 export const runtime = 'nodejs'
 
@@ -53,11 +53,12 @@ export async function POST(request: Request) {
     notes: sp.notes ? String(sp.notes).trim() : null,
   }
 
-  // Zona/costo de envío resueltos en el server.
-  const shippingCost = getShippingCost(body.zone)
-  if (!isShippingZone(body.zone) || shippingCost === null) {
+  // Zona/costo de envío resueltos en el server. RETIRO solo se acepta en los
+  // productos habilitados (no confiar en el cliente).
+  if (!isZoneAllowedForProduct(product.id, body.zone)) {
     return NextResponse.json({ error: 'Elegí una zona de envío válida.' }, { status: 400 })
   }
+  const shippingCost = getShippingCost(body.zone) ?? 0
   const total = product.precio_referencial + shippingCost
 
   try {
@@ -74,14 +75,14 @@ export async function POST(request: Request) {
       shippingCost,
     })
 
-    // Aviso por correo del nuevo pedido (pago pendiente de verificación).
+    // Correos del nuevo pedido (aviso interno + confirmación al cliente).
     // Aislado en su propio try/catch: nunca debe afectar la respuesta del pedido.
     if (id) {
       try {
         const order = await getOrderById(id)
-        if (order) await sendOrderNotification(order)
+        if (order) await sendOrderEmails(order)
       } catch (mailErr) {
-        console.error('[orders/manual] no se pudo enviar el aviso:', mailErr)
+        console.error('[orders/manual] no se pudieron enviar los correos:', mailErr)
       }
     }
 

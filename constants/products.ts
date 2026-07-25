@@ -14,7 +14,7 @@ export interface Product {
   link_whatsapp: string
 }
 
-const WHATSAPP_NUMBER = '541160461248'
+export const WHATSAPP_NUMBER = '541160461248'
 
 const wa = (nombre: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(

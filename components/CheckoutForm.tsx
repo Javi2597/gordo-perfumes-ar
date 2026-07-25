@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { CreditCard, Landmark, Banknote, Wallet } from 'lucide-react'
-import { SHIPPING_ZONES, type ShippingZone } from '@/constants/shipping'
+import { SHIPPING_ZONES, zonesForProduct, type ShippingZone } from '@/constants/shipping'
 import { PAYMENT_LABELS, type PaymentMethod } from '@/constants/payment'
 import CheckoutBrick from './CheckoutBrick'
 import ManualPayment from './ManualPayment'
@@ -118,8 +118,9 @@ export default function CheckoutForm({ productId, slug, productPrice }: Checkout
           Zona de envío
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {(Object.keys(SHIPPING_ZONES) as ShippingZone[]).map((z) => {
+          {zonesForProduct(productId).map((z) => {
             const active = zone === z
+            const cost = SHIPPING_ZONES[z].cost
             return (
               <button
                 key={z}
@@ -131,7 +132,7 @@ export default function CheckoutForm({ productId, slug, productPrice }: Checkout
               >
                 <span className="text-sm font-sans text-ink">{SHIPPING_ZONES[z].label}</span>
                 <span className="text-sm font-sans text-ink/60 tabular-nums">
-                  {formatPrice(SHIPPING_ZONES[z].cost)}
+                  {cost === 0 ? 'Gratis' : formatPrice(cost)}
                 </span>
               </button>
             )
@@ -147,7 +148,9 @@ export default function CheckoutForm({ productId, slug, productPrice }: Checkout
         </div>
         <div className="flex items-center justify-between py-1 text-sm font-sans text-ink/70">
           <span>Envío {zone ? `· ${SHIPPING_ZONES[zone].label}` : ''}</span>
-          <span className="tabular-nums">{shippingCost === null ? '—' : formatPrice(shippingCost)}</span>
+          <span className="tabular-nums">
+            {shippingCost === null ? '—' : shippingCost === 0 ? 'Gratis' : formatPrice(shippingCost)}
+          </span>
         </div>
         <div className="flex items-center justify-between pt-3 mt-2 border-t border-ink/10">
           <span className="font-sans text-[11px] uppercase tracking-widest text-ink/50">Total</span>

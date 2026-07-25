@@ -26,3 +26,13 @@ export const MP_WEBHOOK_SECRET = process.env.MP_WEBHOOK_SECRET ?? ''
 export function isMpConfigured(): boolean {
   return Boolean(accessToken)
 }
+
+/**
+ * True si las credenciales son de prueba (TEST-...). Con estas el checkout
+ * funciona igual pero los pagos son simulados: no acreditan plata real.
+ * El panel /admin lo muestra como advertencia para no vender en modo prueba
+ * sin darse cuenta.
+ */
+export function isMpTestMode(): boolean {
+  return (accessToken ?? '').startsWith('TEST-')
+}

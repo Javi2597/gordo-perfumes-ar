@@ -112,6 +112,35 @@ export async function updateOrderById(
   return rows.length
 }
 
+/**
+ * Aplica el resultado de un pago a una orden (flujo wallet, donde la orden se creó
+ * antes del pago). El UPDATE es condicional — solo toca la fila si el estado cambia —
+ * así que `changed` es verdadero en UNA sola de las llamadas concurrentes.
+ *
+ * Eso es lo que evita mails duplicados: el webhook de MP se reintenta y, además,
+ * la página de resultado concilia por su cuenta. Postgres serializa los UPDATE
+ * sobre la misma fila, así que el segundo ya la ve en el estado nuevo y no devuelve
+ * nada.
+ */
+export async function applyPaymentToOrder(
+  id: string,
+  data: { status: string; statusDetail?: string | null; paymentId?: string | null }
+): Promise<{ changed: boolean; order: Order | null }> {
+  const sql = getSql()
+  const rows = await sql`
+    UPDATE orders
+    SET status = ${data.status},
+        status_detail = ${data.statusDetail ?? null},
+        payment_id = COALESCE(${data.paymentId ?? null}, payment_id),
+        updated_at = now()
+    WHERE id = ${id} AND status IS DISTINCT FROM ${data.status}
+    RETURNING *
+  `
+  if (rows.length > 0) return { changed: true, order: rows[0] as Order }
+  // Sin cambios: la orden ya estaba en ese estado (o no existe).
+  return { changed: false, order: await getOrderById(id) }
+}
+
 /** Actualiza el estado de una orden existente a partir del payment_id. Devuelve cuántas filas tocó. */
 export async function updateOrderStatusByPaymentId(
   paymentId: string,

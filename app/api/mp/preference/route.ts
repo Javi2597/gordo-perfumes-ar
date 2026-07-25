@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { Preference } from 'mercadopago'
-import { mpClient, isMpConfigured } from '@/lib/mercadopago'
+import { mpClient, isMpConfigured, isMpTestMode } from '@/lib/mercadopago'
 import { createOrder, type Shipping } from '@/lib/orders'
 import { products } from '@/constants/products'
 import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
@@ -115,9 +115,11 @@ export async function POST(request: Request) {
       },
     })
 
-    // En pruebas (access token TEST-...) se usa el sandbox_init_point.
-    const isTest = (process.env.MP_ACCESS_TOKEN ?? '').startsWith('TEST-')
-    const redirectUrl = isTest ? pref.sandbox_init_point : pref.init_point
+    // En pruebas (access token TEST-...) se prefiere el sandbox_init_point, pero
+    // MP lo está discontinuando y a veces no lo devuelve: caemos al init_point.
+    const redirectUrl = isMpTestMode()
+      ? (pref.sandbox_init_point ?? pref.init_point)
+      : pref.init_point
 
     if (!redirectUrl) {
       return NextResponse.json({ error: 'No se pudo iniciar el pago.' }, { status: 502 })

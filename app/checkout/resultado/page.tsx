@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle2, Clock, XCircle } from 'lucide-react'
+import { reconcilePayment } from '@/lib/reconcile'
 
 export const metadata: Metadata = {
   title: 'Resultado del pago',
   robots: { index: false, follow: false },
 }
+
+// Concilia contra MP en cada visita: nunca cachear.
+export const dynamic = 'force-dynamic'
 
 type Kind = 'ok' | 'wait' | 'fail'
 interface Result {
@@ -112,11 +116,37 @@ export default async function ResultadoPage({
     status?: string
     status_detail?: string
     payment_id?: string
+    collection_id?: string
     slug?: string
   }>
 }) {
-  const { status = 'error', status_detail = '', payment_id, slug } = await searchParams
-  const result = resolveResult(status, status_detail)
+  const {
+    status = 'error',
+    status_detail = '',
+    payment_id,
+    collection_id,
+    slug,
+  } = await searchParams
+
+  // Red de seguridad: si el webhook de MP no llegó (mal configurado, caído, o
+  // reintentando), conciliamos acá mismo con el id de pago que MP agrega al
+  // volver. Así la orden pasa a "aprobada" y salen los correos igual.
+  //
+  // El estado se consulta contra la API de MP: no se confía en la query string,
+  // que la puede escribir cualquiera. Si algo falla, la página se muestra igual.
+  const paymentId = payment_id ?? collection_id
+  let confirmed: { status: string; statusDetail: string | null } | null = null
+  if (paymentId && /^\d+$/.test(paymentId)) {
+    try {
+      confirmed = await reconcilePayment(paymentId)
+    } catch (err) {
+      console.error('[checkout/resultado] no se pudo conciliar el pago', paymentId, err)
+    }
+  }
+
+  const result = confirmed
+    ? resolveResult(confirmed.status, confirmed.statusDetail ?? '')
+    : resolveResult(status, status_detail)
 
   return (
     <main className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -126,9 +156,9 @@ export default async function ResultadoPage({
         </div>
         <h1 className="font-serif text-3xl text-ink mb-3">{result.title}</h1>
         <p className="text-sm font-sans text-ink/60 leading-relaxed mb-2">{result.message}</p>
-        {payment_id && (
+        {paymentId && (
           <p className="text-[11px] font-sans uppercase tracking-widest text-ink/35 mb-8">
-            N° de operación: {payment_id}
+            N° de operación: {paymentId}
           </p>
         )}
 

@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'node:crypto'
-import { Payment } from 'mercadopago'
-import { mpClient, isMpConfigured, MP_WEBHOOK_SECRET } from '@/lib/mercadopago'
-import { upsertOrderFromPayment, updateOrderById, getOrderById } from '@/lib/orders'
-import { sendOrderEmails } from '@/lib/email'
-import { products } from '@/constants/products'
+import { isMpConfigured, MP_WEBHOOK_SECRET } from '@/lib/mercadopago'
+import { reconcilePayment } from '@/lib/reconcile'
 
 export const runtime = 'nodejs'
 
@@ -80,48 +77,9 @@ export async function POST(request: Request) {
   // Solo nos interesan las notificaciones de pago.
   if (topic === 'payment' && dataId && isMpConfigured()) {
     try {
-      const payment = await new Payment(mpClient).get({ id: dataId })
-      console.log('[mp/webhook] pago', dataId, '→', payment.status, payment.status_detail)
-
-      // Flujo wallet: la orden se creó antes con external_reference = id de la orden.
-      // La actualizamos por ese id y le seteamos el payment_id.
-      if (payment.external_reference) {
-        // Estado previo, para detectar la transición a approved y avisar una sola vez
-        // (el webhook de MP se reintenta).
-        const before = await getOrderById(payment.external_reference)
-        await updateOrderById(payment.external_reference, {
-          status: payment.status ?? 'unknown',
-          statusDetail: payment.status_detail ?? null,
-          paymentId: String(dataId),
-        })
-
-        if (payment.status === 'approved' && before?.status !== 'approved') {
-          try {
-            const order = await getOrderById(payment.external_reference)
-            if (order) await sendOrderEmails(order)
-          } catch (mailErr) {
-            console.error('[mp/webhook] no se pudieron enviar los correos:', mailErr)
-          }
-        }
-      } else {
-        // Flujo tarjeta: reconciliamos por payment_id; si no existe la orden
-        // (el webhook llegó antes del INSERT), la creamos desde el metadata.
-        const metadata = (payment.metadata ?? {}) as {
-          product_id?: string
-          product_slug?: string
-        }
-        const product = products.find((p) => p.id === metadata.product_id)
-        await upsertOrderFromPayment({
-          productId: metadata.product_id ?? 'desconocido',
-          productName: product ? `${product.nombre} — ${product.marca}` : 'Producto desconocido',
-          productSlug: metadata.product_slug ?? product?.slug ?? null,
-          amount: Math.round(payment.transaction_amount ?? product?.precio_referencial ?? 0),
-          status: payment.status ?? 'unknown',
-          statusDetail: payment.status_detail ?? null,
-          paymentId: String(dataId),
-          payerEmail: payment.payer?.email ?? null,
-        })
-      }
+      // Misma conciliación que usa /checkout/resultado como red de seguridad.
+      const result = await reconcilePayment(dataId)
+      console.log('[mp/webhook] pago', dataId, '→', result?.status, result?.statusDetail)
     } catch (err) {
       console.error('[mp/webhook] error consultando el pago', dataId, err)
       // Devolvemos 200 igual: MP reintenta ante 5xx; el error ya quedó logueado.

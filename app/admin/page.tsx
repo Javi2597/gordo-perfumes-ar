@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { listOrders, type Order } from '@/lib/orders'
+import { isMpTestMode, MP_WEBHOOK_SECRET } from '@/lib/mercadopago'
 import { formatPrice, OrderCard } from './_shared'
 
 export const metadata: Metadata = { title: 'Resumen' }
@@ -32,9 +33,28 @@ export default async function AdminHome() {
   ).length
   const recientes = orders.slice(0, 6)
 
+  // Avisos de configuración de cobros. Sin esto los problemas son invisibles:
+  // con credenciales TEST el checkout funciona pero no acredita plata, y sin
+  // webhook las órdenes de Mercado Pago quedan pendientes para siempre.
+  const avisos = [
+    isMpTestMode() &&
+      'MODO PRUEBA: Mercado Pago está con credenciales TEST. Los pagos se simulan y NO acreditan plata real. Cargá las credenciales APP_USR- en Vercel.',
+    !MP_WEBHOOK_SECRET &&
+      'Falta MP_WEBHOOK_SECRET: las notificaciones de Mercado Pago se rechazan, así que las órdenes no pasan solas a "aprobada" ni se envían los correos.',
+  ].filter((a): a is string => Boolean(a))
+
   return (
     <div>
       <h1 className="font-serif text-2xl sm:text-3xl text-ink mb-6">Resumen</h1>
+
+      {avisos.map((aviso) => (
+        <div
+          key={aviso}
+          className="border border-red-300 bg-red-50 text-red-800 text-sm p-4 mb-4"
+        >
+          {aviso}
+        </div>
+      ))}
 
       {error && (
         <div className="border border-red-200 bg-red-50 text-red-700 text-sm p-4 mb-6">

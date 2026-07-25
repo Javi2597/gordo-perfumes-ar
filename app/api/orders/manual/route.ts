@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createOrder, type Shipping } from '@/lib/orders'
+import { createOrder, getOrderById, type Shipping } from '@/lib/orders'
+import { sendOrderNotification } from '@/lib/email'
 import { products } from '@/constants/products'
 import { getShippingCost, isShippingZone } from '@/constants/shipping'
 
@@ -72,6 +73,17 @@ export async function POST(request: Request) {
       shippingZone: body.zone,
       shippingCost,
     })
+
+    // Aviso por correo del nuevo pedido (pago pendiente de verificación).
+    // Aislado en su propio try/catch: nunca debe afectar la respuesta del pedido.
+    if (id) {
+      try {
+        const order = await getOrderById(id)
+        if (order) await sendOrderNotification(order)
+      } catch (mailErr) {
+        console.error('[orders/manual] no se pudo enviar el aviso:', mailErr)
+      }
+    }
 
     return NextResponse.json({ id })
   } catch (err) {

@@ -20,7 +20,7 @@ export const PAYMENT_LABELS: Record<PaymentMethod, string> = {
 
 /** Datos para la transferencia bancaria (se muestran al confirmar el pedido). */
 export const BANK_TRANSFER = {
-  alias: 'lexo.nx',
+  alias: 'terpenos.ok',
   titular: 'Mauricio Ezequiel Rohr',
   entidad: 'Naranja Digital NX',
 }

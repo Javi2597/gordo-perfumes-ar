@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
 import { Payment } from 'mercadopago'
 import { mpClient, isMpConfigured } from '@/lib/mercadopago'
-import { createOrder, type Shipping } from '@/lib/orders'
+import { createOrder, getOrderById, type Shipping } from '@/lib/orders'
+import { sendOrderNotification } from '@/lib/email'
 import { products } from '@/constants/products'
 import { getShippingCost, isShippingZone } from '@/constants/shipping'
 
@@ -120,7 +121,7 @@ export async function POST(request: Request) {
     // Guardamos la orden. Si el INSERT falla, NO rompemos la respuesta del pago:
     // el pago ya se procesó y el webhook puede reconciliar la orden más tarde.
     try {
-      await createOrder({
+      const orderId = await createOrder({
         productId: product.id,
         productName: `${product.nombre} — ${product.marca}`,
         productSlug: product.slug,
@@ -135,6 +136,17 @@ export async function POST(request: Request) {
         shippingZone: body.zone,
         shippingCost,
       })
+
+      // Aviso por correo solo en pagos exitosos (approved / in_process).
+      // Aislado: un fallo de email no afecta la respuesta del pago.
+      if (orderId && (result.status === 'approved' || result.status === 'in_process')) {
+        try {
+          const order = await getOrderById(orderId)
+          if (order) await sendOrderNotification(order)
+        } catch (mailErr) {
+          console.error('[mp/process-payment] no se pudo enviar el aviso:', mailErr)
+        }
+      }
     } catch (dbErr) {
       console.error('[mp/process-payment] no se pudo guardar la orden:', dbErr)
     }

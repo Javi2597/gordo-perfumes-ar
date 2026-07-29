@@ -10,9 +10,9 @@ export const SHIPPING_ZONES: Record<ShippingZone, { label: string; cost: number 
 /**
  * Productos que permiten "Retiro en persona" (sin costo de envío). Se restringe a
  * esta lista para que el retiro no se pueda usar en productos reales y saltear el
- * envío. Hoy: solo el producto de prueba (id '100').
+ * envío. Hoy vacía: ningún producto ofrece retiro.
  */
-export const RETIRO_PRODUCT_IDS: ReadonlySet<string> = new Set(['100'])
+export const RETIRO_PRODUCT_IDS: ReadonlySet<string> = new Set()
 
 export function isShippingZone(value: unknown): value is ShippingZone {
   return value === 'CABA' || value === 'GBA' || value === 'RETIRO'

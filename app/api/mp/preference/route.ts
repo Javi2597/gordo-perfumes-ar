@@ -5,6 +5,7 @@ import { createOrder, type Shipping } from '@/lib/orders'
 import { products } from '@/constants/products'
 import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
 import { SITE_URL } from '@/constants/site'
+import { isPaymentEnabled } from '@/constants/payment'
 
 export const runtime = 'nodejs'
 
@@ -21,6 +22,15 @@ interface PreferenceBody {
 }
 
 export async function POST(request: Request) {
+  // Medio de pago desactivado en el checkout: el endpoint queda cerrado aunque
+  // alguien lo llame directo. Se reabre solo al volver a habilitarlo en ENABLED_PAYMENT_METHODS.
+  if (!isPaymentEnabled('wallet')) {
+    return NextResponse.json(
+      { error: 'Este medio de pago no está disponible.' },
+      { status: 410 }
+    )
+  }
+
   if (!isMpConfigured()) {
     return NextResponse.json(
       { error: 'Pagos no configurados. Falta MP_ACCESS_TOKEN.' },

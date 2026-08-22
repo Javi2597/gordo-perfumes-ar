@@ -6,6 +6,7 @@ import { createOrder, getOrderById, type Shipping } from '@/lib/orders'
 import { sendOrderEmails } from '@/lib/email'
 import { products } from '@/constants/products'
 import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
+import { isPaymentEnabled } from '@/constants/payment'
 
 // Este handler usa el SDK de Node (crypto, access token secreto): runtime Node.
 export const runtime = 'nodejs'
@@ -29,6 +30,15 @@ interface ProcessPaymentBody {
 }
 
 export async function POST(request: Request) {
+  // Medio de pago desactivado en el checkout: el endpoint queda cerrado aunque
+  // alguien lo llame directo. Se reabre solo al volver a habilitarlo en ENABLED_PAYMENT_METHODS.
+  if (!isPaymentEnabled('mercadopago')) {
+    return NextResponse.json(
+      { error: 'Este medio de pago no está disponible.' },
+      { status: 410 }
+    )
+  }
+
   if (!isMpConfigured()) {
     return NextResponse.json(
       { error: 'Pagos no configurados. Falta MP_ACCESS_TOKEN.' },

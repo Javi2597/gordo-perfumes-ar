@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { CreditCard, Landmark, Banknote, Wallet } from 'lucide-react'
+import { Landmark, Banknote } from 'lucide-react'
 import { SHIPPING_ZONES, zonesForProduct, type ShippingZone } from '@/constants/shipping'
-import { PAYMENT_LABELS, type PaymentMethod } from '@/constants/payment'
-import CheckoutBrick from './CheckoutBrick'
+import {
+  ENABLED_PAYMENT_METHODS,
+  PAYMENT_LABELS,
+  type EnabledPaymentMethod,
+} from '@/constants/payment'
 import ManualPayment from './ManualPayment'
-import WalletCheckout from './WalletCheckout'
 import {
   EMPTY_SHIPPING,
   REQUIRED_SHIPPING,
@@ -16,6 +18,7 @@ import {
 
 interface CheckoutFormProps {
   productId: string
+  /** Lo sigue pasando la página; hoy sin uso (lo consumía el checkout de tarjeta). */
   slug: string
   productPrice: number
 }
@@ -28,25 +31,21 @@ function formatPrice(price: number) {
   }).format(price)
 }
 
-const METHOD_ICON = {
-  mercadopago: CreditCard,
-  wallet: Wallet,
+const METHOD_ICON: Record<EnabledPaymentMethod, typeof Landmark> = {
   transferencia: Landmark,
   efectivo: Banknote,
-} as const
+}
 
-const METHOD_HINT: Record<PaymentMethod, string> = {
-  mercadopago: 'Pagá con tu tarjeta sin salir del sitio',
-  wallet: 'Pagá con el saldo o medios de tu cuenta de Mercado Pago',
+const METHOD_HINT: Record<EnabledPaymentMethod, string> = {
   transferencia: 'Transferí a nuestro alias y confirmá',
   efectivo: 'Pagás al recibir el paquete',
 }
 
-export default function CheckoutForm({ productId, slug, productPrice }: CheckoutFormProps) {
+export default function CheckoutForm({ productId, productPrice }: CheckoutFormProps) {
   const [shipping, setShipping] = useState<ShippingForm>(EMPTY_SHIPPING)
   const [email, setEmail] = useState('')
   const [zone, setZone] = useState<'' | ShippingZone>('')
-  const [method, setMethod] = useState<'' | PaymentMethod>('')
+  const [method, setMethod] = useState<'' | EnabledPaymentMethod>('')
 
   // Ref con los datos actuales para que el Brick / pago manual los lea al enviar.
   const dataRef = useRef<CheckoutData>({ shipping, zone, email })
@@ -164,7 +163,7 @@ export default function CheckoutForm({ productId, slug, productPrice }: Checkout
           Método de pago
         </h3>
         <div className="grid grid-cols-1 gap-3">
-          {(Object.keys(PAYMENT_LABELS) as PaymentMethod[]).map((m) => {
+          {ENABLED_PAYMENT_METHODS.map((m) => {
             const active = method === m
             const IconComp = METHOD_ICON[m]
             return (
@@ -196,16 +195,6 @@ export default function CheckoutForm({ productId, slug, productPrice }: Checkout
         <div className="border border-ink/10 text-ink/50 text-sm font-sans p-4 text-center">
           Elegí un método de pago para continuar.
         </div>
-      ) : method === 'mercadopago' ? (
-        <CheckoutBrick
-          productId={productId}
-          slug={slug}
-          amount={total}
-          payerEmail={email}
-          dataRef={dataRef}
-        />
-      ) : method === 'wallet' ? (
-        <WalletCheckout productId={productId} dataRef={dataRef} />
       ) : (
         <ManualPayment method={method} productId={productId} dataRef={dataRef} />
       )}

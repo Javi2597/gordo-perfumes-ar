@@ -67,7 +67,7 @@ const faqs = [
       },
       {
         q: '¿Qué medios de pago aceptan?',
-        a: 'Aceptamos distintos medios de pago. La información se coordina al momento de realizar el pedido.',
+        a: 'Transferencia bancaria (te pasamos el alias al confirmar el pedido) o efectivo contra entrega, al recibir el paquete. Coordinamos todo por WhatsApp.',
       },
       {
         q: '¿Dónde puedo ver novedades y recomendaciones?',

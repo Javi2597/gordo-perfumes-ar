@@ -10,6 +10,21 @@ export function isPaymentMethod(value: unknown): value is PaymentMethod {
   )
 }
 
+/**
+ * Métodos que hoy se ofrecen en el checkout. Tarjeta (`mercadopago`) y Mercado Pago
+ * dinero en cuenta (`wallet`) están DESACTIVADOS: el código sigue entero (SDK, webhook,
+ * conciliación, columnas de la DB) para poder volver atrás agregándolos a esta lista.
+ * Las órdenes históricas con esos métodos se siguen mostrando en el panel.
+ */
+export const ENABLED_PAYMENT_METHODS = ['transferencia', 'efectivo'] as const satisfies
+  readonly PaymentMethod[]
+
+export type EnabledPaymentMethod = (typeof ENABLED_PAYMENT_METHODS)[number]
+
+export function isPaymentEnabled(value: unknown): value is EnabledPaymentMethod {
+  return (ENABLED_PAYMENT_METHODS as readonly unknown[]).includes(value)
+}
+
 // El orden acá define el orden del selector en el checkout.
 export const PAYMENT_LABELS: Record<PaymentMethod, string> = {
   mercadopago: 'Tarjeta de crédito o débito',

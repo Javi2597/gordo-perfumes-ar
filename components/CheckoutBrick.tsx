@@ -61,13 +61,14 @@ export default function CheckoutBrick({
   const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const brickRef = useRef<{ unmount: () => void } | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  // PUBLIC_KEY es constante de módulo: si falta, el error se conoce en el primer render.
+  // Setearlo dentro del effect dispara un render en cascada (react-hooks/set-state-in-effect).
+  const [error, setError] = useState<string | null>(
+    PUBLIC_KEY ? null : 'Falta configurar NEXT_PUBLIC_MP_PUBLIC_KEY.'
+  )
 
   useEffect(() => {
-    if (!PUBLIC_KEY) {
-      setError('Falta configurar NEXT_PUBLIC_MP_PUBLIC_KEY.')
-      return
-    }
+    if (!PUBLIC_KEY) return
 
     let cancelled = false
 

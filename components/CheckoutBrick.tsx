@@ -22,6 +22,15 @@ declare global {
 }
 
 const SDK_SRC = 'https://sdk.mercadopago.com/js/v2'
+
+/** Id del intento de compra. Si el navegador no tiene randomUUID, el server pone el suyo. */
+function newPaymentIntentId(): string {
+  try {
+    return crypto.randomUUID()
+  } catch {
+    return ''
+  }
+}
 const PUBLIC_KEY = process.env.NEXT_PUBLIC_MP_PUBLIC_KEY ?? ''
 
 /** Carga el SDK de MercadoPago una sola vez y resuelve cuando está listo. */
@@ -61,6 +70,11 @@ export default function CheckoutBrick({
   const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const brickRef = useRef<{ unmount: () => void } | null>(null)
+  // Id estable de ESTE intento de compra: se genera una vez y se reenvía en cada
+  // submit. Es lo que hace que un reintento (timeout, doble click) no cobre dos
+  // veces. useRef y no useState: no debe regenerarse en cada re-render.
+  const paymentIntentIdRef = useRef<string | null>(null)
+  if (paymentIntentIdRef.current === null) paymentIntentIdRef.current = newPaymentIntentId()
   // PUBLIC_KEY es constante de módulo: si falta, el error se conoce en el primer render.
   // Setearlo dentro del effect dispara un render en cascada (react-hooks/set-state-in-effect).
   const [error, setError] = useState<string | null>(
@@ -116,6 +130,7 @@ export default function CheckoutBrick({
                   body: JSON.stringify({
                     ...formData,
                     productId,
+                    paymentIntentId: paymentIntentIdRef.current,
                     shipping: data.shipping,
                     zone: data.zone,
                   }),

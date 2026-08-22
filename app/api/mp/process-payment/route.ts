@@ -7,8 +7,13 @@ import { sendOrderEmails } from '@/lib/email'
 import { products } from '@/constants/products'
 import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
 import { isPaymentEnabled } from '@/constants/payment'
+import { isValidEmail, parseShipping } from '@/lib/validation'
+import { enforceRateLimit, LIMITS } from '@/lib/rate-limit'
 
 // Este handler usa el SDK de Node (crypto, access token secreto): runtime Node.
+/** Forma de UUID v4: no le pasamos a MP cualquier cosa que mande el cliente. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export const runtime = 'nodejs'
 
 /**
@@ -17,6 +22,8 @@ export const runtime = 'nodejs'
  */
 interface ProcessPaymentBody {
   productId?: string
+  /** Id estable del intento de compra que genera el cliente (ver CheckoutBrick). */
+  paymentIntentId?: string
   token?: string
   issuer_id?: string
   payment_method_id?: string
@@ -38,6 +45,9 @@ export async function POST(request: Request) {
       { status: 410 }
     )
   }
+
+  const limited = enforceRateLimit(request, 'mp/process-payment', LIMITS.payments)
+  if (limited) return limited
 
   if (!isMpConfigured()) {
     return NextResponse.json(
@@ -68,30 +78,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Producto inexistente.' }, { status: 400 })
   }
 
-  const email = body.payer?.email
-  if (!email) {
-    return NextResponse.json({ error: 'Falta el email del pagador.' }, { status: 400 })
+  // El email es el destinatario real del correo de confirmación: validarlo o cualquiera
+  // puede hacer que el dominio verificado le mande un mail a quien quiera.
+  const email = body.payer?.email?.trim()
+  if (!isValidEmail(email)) {
+    return NextResponse.json({ error: 'Ingresá un email válido.' }, { status: 400 })
   }
 
-  // Datos de envío: obligatorios para poder despachar el producto.
-  const sp = body.shipping ?? {}
-  const required: (keyof Shipping)[] = ['name', 'phone', 'address', 'city', 'province', 'zip']
-  const missing = required.filter((k) => !String(sp[k] ?? '').trim())
-  if (missing.length > 0) {
-    return NextResponse.json(
-      { error: 'Faltan datos de envío obligatorios.' },
-      { status: 400 }
-    )
+  // Envío: normalizado y validado (obligatorios + topes de largo) en un solo lugar.
+  const parsed = parseShipping(body.shipping)
+  if ('error' in parsed) {
+    return NextResponse.json({ error: parsed.error }, { status: 400 })
   }
-  const shipping: Shipping = {
-    name: String(sp.name).trim(),
-    phone: String(sp.phone).trim(),
-    address: String(sp.address).trim(),
-    city: String(sp.city).trim(),
-    province: String(sp.province).trim(),
-    zip: String(sp.zip).trim(),
-    notes: sp.notes ? String(sp.notes).trim() : null,
-  }
+  const { shipping } = parsed
 
   // Zona de envío: obligatoria. El costo se resuelve en el server (no del cliente).
   // RETIRO solo se acepta en los productos habilitados.
@@ -100,6 +99,17 @@ export async function POST(request: Request) {
   }
   const shippingCost = getShippingCost(body.zone) ?? 0
   const total = product.precio_referencial + shippingCost
+
+  // Idempotencia real: la clave la fija el CLIENTE una vez por intento de compra, así
+  // un reintento (timeout de red, doble submit) reusa la misma y Mercado Pago devuelve
+  // el pago original en vez de cobrar de nuevo.
+  //
+  // Si no llega (cliente viejo), se cae a una clave nueva: es el comportamiento de
+  // siempre. A propósito NO se deriva de los datos del pedido: una clave determinista
+  // tipo hash(producto|email|total) es la misma para una recompra legítima del mismo
+  // perfume, y ahí MP devolvería el pago viejo y perderíamos la segunda venta.
+  const intentId = String(body.paymentIntentId ?? '').trim()
+  const idempotencyKey = UUID_RE.test(intentId) ? intentId : randomUUID()
 
   const payment = new Payment(mpClient)
 
@@ -123,10 +133,7 @@ export async function POST(request: Request) {
         },
         metadata: { product_id: product.id, product_slug: product.slug },
       },
-      requestOptions: {
-        // Evita cobros duplicados si el cliente reintenta el mismo submit.
-        idempotencyKey: randomUUID(),
-      },
+      requestOptions: { idempotencyKey },
     })
 
     // Guardamos la orden. Si el INSERT falla, NO rompemos la respuesta del pago:

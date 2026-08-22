@@ -8,6 +8,7 @@ import {
   PAYMENT_LABELS,
   type EnabledPaymentMethod,
 } from '@/constants/payment'
+import { isValidEmail } from '@/lib/validation'
 import ManualPayment from './ManualPayment'
 import {
   EMPTY_SHIPPING,
@@ -61,7 +62,7 @@ export default function CheckoutForm({ productId, productPrice }: CheckoutFormPr
   const total = productPrice + (shippingCost ?? 0)
 
   const shippingComplete = REQUIRED_SHIPPING.every((k) => shipping[k].trim())
-  const emailValid = /\S+@\S+\.\S+/.test(email)
+  const emailValid = isValidEmail(email)
   const contactComplete = shippingComplete && emailValid && Boolean(zone)
 
   const inputClass =

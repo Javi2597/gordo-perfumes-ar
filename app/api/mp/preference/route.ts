@@ -6,6 +6,8 @@ import { products } from '@/constants/products'
 import { getShippingCost, isZoneAllowedForProduct } from '@/constants/shipping'
 import { SITE_URL } from '@/constants/site'
 import { isPaymentEnabled } from '@/constants/payment'
+import { isValidEmail, parseShipping } from '@/lib/validation'
+import { enforceRateLimit, LIMITS } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 
@@ -31,6 +33,9 @@ export async function POST(request: Request) {
     )
   }
 
+  const limited = enforceRateLimit(request, 'mp/preference', LIMITS.payments)
+  if (limited) return limited
+
   if (!isMpConfigured()) {
     return NextResponse.json(
       { error: 'Pagos no configurados. Falta MP_ACCESS_TOKEN.' },
@@ -50,27 +55,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Producto inexistente.' }, { status: 400 })
   }
 
+  // El email es el destinatario real del correo de confirmación: validarlo o cualquiera
+  // puede hacer que el dominio verificado le mande un mail a quien quiera.
   const email = body.email?.trim()
-  if (!email) {
-    return NextResponse.json({ error: 'Falta el email.' }, { status: 400 })
+  if (!isValidEmail(email)) {
+    return NextResponse.json({ error: 'Ingresá un email válido.' }, { status: 400 })
   }
 
-  // Envío obligatorio.
-  const sp = body.shipping ?? {}
-  const required: (keyof Shipping)[] = ['name', 'phone', 'address', 'city', 'province', 'zip']
-  const missing = required.filter((k) => !String(sp[k] ?? '').trim())
-  if (missing.length > 0) {
-    return NextResponse.json({ error: 'Faltan datos de envío obligatorios.' }, { status: 400 })
+  // Envío: normalizado y validado (obligatorios + topes de largo) en un solo lugar.
+  const parsed = parseShipping(body.shipping)
+  if ('error' in parsed) {
+    return NextResponse.json({ error: parsed.error }, { status: 400 })
   }
-  const shipping: Shipping = {
-    name: String(sp.name).trim(),
-    phone: String(sp.phone).trim(),
-    address: String(sp.address).trim(),
-    city: String(sp.city).trim(),
-    province: String(sp.province).trim(),
-    zip: String(sp.zip).trim(),
-    notes: sp.notes ? String(sp.notes).trim() : null,
-  }
+  const { shipping } = parsed
 
   // Total (producto + envío) resuelto en el server. RETIRO solo en productos habilitados.
   if (!isZoneAllowedForProduct(product.id, body.zone)) {

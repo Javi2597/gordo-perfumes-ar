@@ -1,5 +1,7 @@
-import type { Order } from '@/lib/orders'
+import { isManualPending, type Order } from '@/lib/orders'
 import { setOrderStatusAction } from './actions'
+
+export { isManualPending }
 
 // Helpers y componentes compartidos por las páginas del admin.
 
@@ -13,14 +15,6 @@ const METHOD_LABEL: Record<string, string> = {
 export function methodLabel(method: string | null): string {
   if (!method) return '—'
   return METHOD_LABEL[method] ?? method
-}
-
-/** True si es una orden manual (transferencia/efectivo) que sigue pendiente. */
-export function isManualPending(order: Order): boolean {
-  return (
-    order.status === 'pending' &&
-    (order.payment_method === 'transferencia' || order.payment_method === 'efectivo')
-  )
 }
 
 /** Botones para confirmar/cancelar una orden manual pendiente (Server Actions). */

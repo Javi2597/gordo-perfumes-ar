@@ -85,6 +85,14 @@ export async function getOrderById(id: string): Promise<Order | null> {
   return (rows[0] as Order) ?? null
 }
 
+/** True si es una orden manual (transferencia/efectivo) que sigue pendiente. */
+export function isManualPending(order: Order): boolean {
+  return (
+    order.status === 'pending' &&
+    (order.payment_method === 'transferencia' || order.payment_method === 'efectivo')
+  )
+}
+
 /** Actualiza el estado de una orden por su id (uuid). Usado desde el panel. */
 export async function updateOrderStatus(id: string, status: string): Promise<void> {
   const sql = getSql()
